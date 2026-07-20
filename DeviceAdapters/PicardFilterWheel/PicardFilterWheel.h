@@ -1,9 +1,9 @@
 ///////////////////////////////////////////////////////////////////////////////
-// FILE:          PicardStage.h
+// FILE:          PicardFilterWheel.h
 // PROJECT:       Micro-Manager
 // SUBSYSTEM:     DeviceAdapters
 //-----------------------------------------------------------------------------
-// DESCRIPTION:   The drivers for the Picard Industries USB stages
+// DESCRIPTION:   The drivers for the Picard Industries USB filter wheel
 //                Based on the CDemoStage and CDemoXYStage classes
 //
 // AUTHORS:       Johannes Schindelin, Luke Stuyvenberg, 2011 - 2014
@@ -27,123 +27,54 @@
 
 #include "DeviceBase.h"
 
-//////////////////////////////////////////////////////////////////////////////
-// CPiTwister class
-//////////////////////////////////////////////////////////////////////////////
-
-class CPiTwister: public CStageBase<CPiTwister>
+class CPicardFilterWheel :
+	public CStateDeviceBase<CPicardFilterWheel>
 {
-public:
-	CPiTwister();
-	~CPiTwister();
+public: 
+	CPicardFilterWheel();
+	~CPicardFilterWheel();
 
-	bool Busy();
+	// MMDevice API
+    // ------------
 	int Initialize();
 	int Shutdown();
+
 	void GetName(char* name) const;
-
-	int SetPositionUm(double pos);
-	int GetPositionUm(double& pos);
-	int SetPositionSteps(long steps);
-	int GetPositionSteps(long& steps);
-	int SetOrigin();
-	int GetLimits(double& lower, double& upper);
-	int GetStepLimits(long& lower, long& upper);
-	int IsStageSequenceable(bool& isSequenceable) const;
-	bool IsContinuousFocusDrive() const;
-
-	double GetStepSizeUm();
-
-private:
-	int OnSerialNumber(MM::PropertyBase* pProp, MM::ActionType eAct);
-	int OnVelocity(MM::PropertyBase* pProp, MM::ActionType eAct);
-
-	int serial_;
-	int velocity_;
-	void *handle_;
-};
-
-//////////////////////////////////////////////////////////////////////////////
-// CPiStage class
-//////////////////////////////////////////////////////////////////////////////
-
-class CPiStage : public CStageBase<CPiStage>
-{
-public:
-	CPiStage();
-	~CPiStage();
-
 	bool Busy();
-	int Initialize();
-	int Shutdown();
-	void GetName(char* name) const;
+	unsigned long GetNumberOfPositions() const 
+	{
+		return static_cast<unsigned long>(numPositions_); 
+	}
 
-	int SetPositionUm(double pos);
-	int GetPositionUm(double& pos);
-	int SetPositionSteps(long steps);
-	int GetPositionSteps(long& steps);
-   int Home();
-	int SetOrigin();
-	int GetLimits(double& lower, double& upper);
-	int GetStepLimits(long& lower, long& upper);
-	int IsStageSequenceable(bool& isSequenceable) const;
-	bool IsContinuousFocusDrive() const;
+	// Property action handlers 
+	int OnState(
+		MM::PropertyBase* property,
+		MM::ActionType action);
 
-	double GetStepSizeUm();
+	int OnSerialNumber(
+		MM::PropertyBase* property,
+		MM::ActionType action);
 
-private:
-	int OnSerialNumber(MM::PropertyBase* pProp, MM::ActionType eAct);
-	int OnVelocity(MM::PropertyBase* pProp, MM::ActionType eAct);
-
-	int serial_;
-	int velocity_;
-	void *handle_;
-   bool homing_;
-};
-
-//////////////////////////////////////////////////////////////////////////////
-// CPiXYStage class
-//////////////////////////////////////////////////////////////////////////////
-
-class CPiXYStage : public CXYStageBase<CPiXYStage>
-{
-public:
-	CPiXYStage();
-	~CPiXYStage();
-
-	bool Busy();
-	int Initialize();
-	int Shutdown();
-	void GetName(char* name) const;
-
-	int SetPositionUm(double x, double y);
-	int GetPositionUm(double& x, double& y);
-	int SetPositionSteps(long x, long y);
-	int GetPositionSteps(long& x, long& y);
-	int Home();
-	int Stop();
-	int SetOrigin();
-	int GetLimitsUm(double& xMin, double& xMax, double& yMin, double& yMax);
-	int GetStepLimits(long& xMin, long& xMax, long& yMin, long& yMax);
-	int IsXYStageSequenceable(bool& isSequenceable) const;
-
-	double GetStepSizeXUm();
-	double GetStepSizeYUm();
-
-protected:
-	int InitStage(void** handleptr, int serial);
-	void ShutdownStage(void** handleptr);
+	int OnNumberOfPositions(
+		MM::PropertyBase* property,
+		MM::ActionType action);
 
 private:
-	int OnSerialNumberX(MM::PropertyBase* pProp, MM::ActionType eAct);
-	int OnSerialNumberY(MM::PropertyBase* pProp, MM::ActionType eAct);
-	int OnVelocityX(MM::PropertyBase* pProp, MM::ActionType eAct);
-	int OnVelocityY(MM::PropertyBase* pProp, MM::ActionType eAct);
+	int DiscoverSerialNumber();
+	int serialNumber_;
 
-	int serialX_, serialY_;
-	int velocityX_, velocityY_;
-	void *handleX_, *handleY_;
-   bool homing_;
+	long numPositions_;
+
+	bool initialized_;
+	bool movePending_;
+
+	int targetPicardPosition_;
+
+	long position_;
+
+	void* handle_;
+
+	MM::MMTime moveStartTime_;
 };
 
 #endif //_PICARDFILTERWHEEL_H_
