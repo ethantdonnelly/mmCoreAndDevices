@@ -1,13 +1,13 @@
 <project name="PicardFilterWheel">
    <import file="../../../buildscripts/deviceadapter.xml"/>
 
-	<property name="picard.4d.libs" location="${mm.thirdpartypublic}/Picard/20140430/4D-Stage DLL and Docs"/>
+	<property name="picard.4d.libs" location="${mm.thirdpartypublic}/Picard/USB Filter V1.4/PiUsbSDK"/>
 
 	<target name="install-Win32">
-		<copy todir="${mm.dll.installdir}" file="${picard.4d.libs}/Win32/PiUsb.dll"/>
+		<copy todir="${mm.dll.installdir}" file="${picard.filterwheel.sdk}/bin/Win32/PiUsb.dll"/>
 	</target>
 
 	<target name="install-x64">
-		<copy todir="${mm.dll.installdir}" file="${picard.4d.libs}/x64/PiUsb.dll"/>
+		<copy todir="${mm.dll.installdir}" file="${picard.filterwheel.sdk}/bin/x64/PiUsb.dll"/>
 	</target>
 </project>

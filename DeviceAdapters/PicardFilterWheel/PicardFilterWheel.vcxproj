@@ -54,15 +54,15 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(MM_3RDPARTYPUBLIC)\Picard\20141223\4D-Stage DLL and Docs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MM_3RDPARTYPUBLIC)\Picard\USB Filter V1.4\PiUsbSDK\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
-      <AdditionalDependencies>PiUsb.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(MM_3RDPARTYPUBLIC)\Picard\20141223\4D-Stage DLL and Docs\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>PiUsb.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(MM_3RDPARTYPUBLIC)\Picard\USB Filter V1.4\PiUsbSDK\lib\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -74,15 +74,15 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(MM_3RDPARTYPUBLIC)\Picard\20141223\4D-Stage DLL and Docs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MM_3RDPARTYPUBLIC)\Picard\USB Filter V1.4\PiUsbSDK\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
-      <AdditionalDependencies>PiUsb.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(MM_3RDPARTYPUBLIC)\Picard\20141223\4D-Stage DLL and Docs\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>PiUsb.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(MM_3RDPARTYPUBLIC)\Picard\USB Filter V1.4\PiUsbSDK\lib\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
