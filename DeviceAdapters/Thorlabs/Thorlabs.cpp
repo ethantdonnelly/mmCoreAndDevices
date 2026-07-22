@@ -29,6 +29,7 @@
 #include "MotorZStage.h"
 #include "PiezoZStage.h"
 #include "IntegratedFilterWheel.h"
+#include "MCM301.h"
 #include <ModuleInterface.h>
 #include <MMDevice.h>
 #include <cstdio>
@@ -108,8 +109,8 @@ MODULE_API MM::Device* CreateDevice(const char* deviceName)
    }
    if (strcmp(deviceName, g_WheelDeviceName) == 0)
    {
-      IntegratedFilterWheel* wheel = new IntegratedFilterWheel();
-      return wheel;
+       IntegratedFilterWheel* wheel = new IntegratedFilterWheel();
+       return wheel;
    }
 
    return 0;
