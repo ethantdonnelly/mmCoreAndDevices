@@ -109,8 +109,8 @@ MODULE_API MM::Device* CreateDevice(const char* deviceName)
    }
    if (strcmp(deviceName, g_WheelDeviceName) == 0)
    {
-       IntegratedFilterWheel* wheel = new IntegratedFilterWheel();
-       return wheel;
+      IntegratedFilterWheel* wheel = new IntegratedFilterWheel();
+      return wheel;
    }
 
    return 0;

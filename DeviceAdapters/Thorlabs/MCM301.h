@@ -20,3 +20,13 @@
 // AUTHOR:        Nenad Amodaj, nenad@amodaj.com, 2011
 //                http://nenad.amodaj.com
 //
+
+#ifndef _MCM301_H_
+#define _MCM301_H_
+
+#include <MMDevice.h>
+#include <DeviceBase.h>
+
+
+
+#endif //_MCM301_H_

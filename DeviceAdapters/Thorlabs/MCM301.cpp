@@ -20,3 +20,18 @@
 // AUTHOR:        Nenad Amodaj, nenad@amodaj.com, 2011
 //
 
+#ifdef WIN32
+	#include <windows.h>
+#endif
+
+#include "MCM301.h"
+#include "Thorlabs.h"
+#include <cstdio>
+#include <string>
+#include <math.h>
+#include <sstream>
+
+
+
+
+
