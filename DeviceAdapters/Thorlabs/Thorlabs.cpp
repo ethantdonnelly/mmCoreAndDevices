@@ -45,6 +45,7 @@ const char* g_XYStageDeviceName = "XYStage";
 const char* g_PiezoZStageDeviceName = "PiezoZStage";
 const char* g_MotorZStageDeviceName = "MotorZStage";
 const char* g_WheelDeviceName = "FilterWheel";
+const char* g_MCM301StageDeviceName = "MCM301Stage";
 
 const char* g_SerialNumberProp = "SerialNumber";
 const char* g_ModelNumberProp = "ModelNumber";
@@ -85,6 +86,7 @@ MODULE_API void InitializeModuleData()
    RegisterDevice(g_PiezoZStageDeviceName, MM::StageDevice, "Thorlabs piezo Z Stage");
    RegisterDevice(g_MotorZStageDeviceName, MM::StageDevice, "Thorlabs Motor Z Stage");
    RegisterDevice(g_WheelDeviceName, MM::StateDevice, "Integrated filter wheel");
+   RegisterDevice(g_MCM301StageDeviceName, MM::StageDevice, "Thorlabs MCM301 single-axis Z stage");
 }
 
 MODULE_API MM::Device* CreateDevice(const char* deviceName)
@@ -111,6 +113,11 @@ MODULE_API MM::Device* CreateDevice(const char* deviceName)
    {
       IntegratedFilterWheel* wheel = new IntegratedFilterWheel();
       return wheel;
+   }
+   if (strcmp(deviceName, g_MCM301StageDeviceName) == 0)
+   {
+       MCM301Stage* stage = new MCM301Stage();
+       return stage;
    }
 
    return 0;
