@@ -30,6 +30,8 @@
 #include "PiezoZStage.h"
 #include "IntegratedFilterWheel.h"
 #include "MCM301.h"
+#include "BPC301.h"
+
 #include <ModuleInterface.h>
 #include <MMDevice.h>
 #include <cstdio>
@@ -46,6 +48,7 @@ const char* g_PiezoZStageDeviceName = "PiezoZStage";
 const char* g_MotorZStageDeviceName = "MotorZStage";
 const char* g_WheelDeviceName = "FilterWheel";
 const char* g_MCM301StageDeviceName = "MCM301Stage";
+const char* g_BPC301StageDeviceName = "BPC301Stage";
 
 const char* g_SerialNumberProp = "SerialNumber";
 const char* g_ModelNumberProp = "ModelNumber";
@@ -87,6 +90,7 @@ MODULE_API void InitializeModuleData()
    RegisterDevice(g_MotorZStageDeviceName, MM::StageDevice, "Thorlabs Motor Z Stage");
    RegisterDevice(g_WheelDeviceName, MM::StateDevice, "Integrated filter wheel");
    RegisterDevice(g_MCM301StageDeviceName, MM::StageDevice, "Thorlabs MCM301 single-axis Z stage");
+   RegisterDevice(g_BPC301StageDeviceName, MM::StageDevice, "Thorlabs BPC301 high-precision single-axis Z stage");
 }
 
 MODULE_API MM::Device* CreateDevice(const char* deviceName)
@@ -118,6 +122,11 @@ MODULE_API MM::Device* CreateDevice(const char* deviceName)
    {
        MCM301Stage* stage = new MCM301Stage();
        return stage;
+   }
+   if (strcmp(deviceName, g_BPC301StageDeviceName) == 0)
+   {
+	   BPC301Stage* stage = new BPC301Stage();
+	   return stage;
    }
 
    return 0;

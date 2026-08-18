@@ -59,11 +59,11 @@
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(EMIMMRoot)\3rdpartypublic\Thorlabs\BPC301\include;$(EMIMMRoot)\3rdpartypublic\Thorlabs\MCM301\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MM_3RDPARTYPUBLIC)\Thorlabs\BPC301\include;$(MM_3RDPARTYPUBLIC)\Thorlabs\MCM301\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>$(EMIMMRoot)\3rdpartypublic\Thorlabs\BPC301\lib;$(EMIMMRoot)\3rdpartypublic\Thorlabs\MCM301\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(MM_3RDPARTYPUBLIC)\Thorlabs\BPC301\lib;$(MM_3RDPARTYPUBLIC)\Thorlabs\MCM301\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>Thorlabs.MotionControl.Benchtop.Piezo.lib;MCM301Lib_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -78,13 +78,13 @@
       <FunctionLevelLinking>false</FunctionLevelLinking>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(EMIMMRoot)\3rdpartypublic\Thorlabs\BPC301\include;$(EMIMMRoot)\3rdpartypublic\Thorlabs\MCM301\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MM_3RDPARTYPUBLIC)\Thorlabs\BPC301\include;$(MM_3RDPARTYPUBLIC)\Thorlabs\MCM301\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <AdditionalLibraryDirectories>$(EMIMMRoot)\3rdpartypublic\Thorlabs\BPC301\lib;$(EMIMMRoot)\3rdpartypublic\Thorlabs\MCM301\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(MM_3RDPARTYPUBLIC)\Thorlabs\BPC301\lib;$(MM_3RDPARTYPUBLIC)\Thorlabs\MCM301\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>Thorlabs.MotionControl.Benchtop.Piezo.lib;MCM301Lib_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
