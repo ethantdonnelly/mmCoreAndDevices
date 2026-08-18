@@ -33,6 +33,9 @@
     <ClCompile Include="XYStage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BPC301.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="MCM301.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -54,6 +57,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="XYStage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BPC301.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MCM301.h">

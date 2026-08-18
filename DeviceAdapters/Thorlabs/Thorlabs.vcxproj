@@ -59,12 +59,12 @@
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(MM_3RDPARTYPUBLIC)\Thorlabs\MCM301\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(EMIMMRoot)\3rdpartypublic\Thorlabs\BPC301\include;$(EMIMMRoot)\3rdpartypublic\Thorlabs\MCM301\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>$(MM_3RDPARTYPUBLIC)\Thorlabs\MCM301\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>MCM301Lib_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(EMIMMRoot)\3rdpartypublic\Thorlabs\BPC301\lib;$(EMIMMRoot)\3rdpartypublic\Thorlabs\MCM301\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Thorlabs.MotionControl.Benchtop.Piezo.lib;MCM301Lib_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -78,17 +78,18 @@
       <FunctionLevelLinking>false</FunctionLevelLinking>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(MM_3RDPARTYPUBLIC)\Thorlabs\MCM301\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(EMIMMRoot)\3rdpartypublic\Thorlabs\BPC301\include;$(EMIMMRoot)\3rdpartypublic\Thorlabs\MCM301\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <AdditionalLibraryDirectories>$(MM_3RDPARTYPUBLIC)\Thorlabs\MCM301\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>MCM301Lib_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(EMIMMRoot)\3rdpartypublic\Thorlabs\BPC301\lib;$(EMIMMRoot)\3rdpartypublic\Thorlabs\MCM301\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Thorlabs.MotionControl.Benchtop.Piezo.lib;MCM301Lib_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BPC301.cpp" />
     <ClCompile Include="IntegratedFilterWheel.cpp" />
     <ClCompile Include="MCM301.cpp" />
     <ClCompile Include="MotorStage.cpp" />
@@ -98,6 +99,7 @@
     <ClCompile Include="XYStage.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BPC301.h" />
     <ClInclude Include="IntegratedFilterWheel.h" />
     <ClInclude Include="MCM301.h" />
     <ClInclude Include="MotorStage.h" />
