@@ -33,8 +33,6 @@
 #include <sstream>
 #include <vector>
 
-const char* g_BPC301StageDeviceName = "BPC301Stage";
-
 namespace
 {
     const char* const kDescription =
