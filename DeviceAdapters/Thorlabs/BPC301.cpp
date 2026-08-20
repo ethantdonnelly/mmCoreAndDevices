@@ -43,12 +43,12 @@ namespace
     const char* const kPropInvertDirection = "InvertDirection";
     const char* const kPropZeroOnInitialize = "ZeroOnInitialize";
     const char* const kPropPollingIntervalMs = "PollingIntervalMs";
-    const char* const kPropZeroTimeoutMs = "ZeroTimeoutMs";
     const char* const kPropBusyDelayMs = "BusyDelayMs";
     const char* const kPropMaximumTravelUm = "MaximumTravelUm";
     const char* const kPropStepSizeUm = "StepSizeUm";
     const char* const kPropControlMode = "ControlMode";
     const char* const kPropStatusBits = "StatusBits";
+    const long kZeroTimeoutMs = 100000;
 
     const char* const kYes = "Yes";
     const char* const kNo = "No";
@@ -116,7 +116,6 @@ BPC301Stage::BPC301Stage() :
     moveCommandIssued_(false),
     channel_(kDefaultChannel),
     pollingIntervalMs_(250),
-    zeroTimeoutMs_(10000),
     busyDelayMs_(10),
     invertDirection_(false),
     zeroOnInitialize_(true),
@@ -177,10 +176,6 @@ BPC301Stage::BPC301Stage() :
         "250", MM::Integer, false, 0, true);
     SetPropertyLimits(kPropPollingIntervalMs, 10, 5000);
 
-    CreateProperty(kPropZeroTimeoutMs,
-        "10000", MM::Integer, false, 0, true);
-    SetPropertyLimits(kPropZeroTimeoutMs, 1000, 120000);
-
     // The Python prototype blocks Micro-Manager briefly after a position command.
     CreateProperty(kPropBusyDelayMs,
         "10", MM::Integer, false, 0, true);
@@ -206,7 +201,6 @@ int BPC301Stage::Initialize()
     std::string value;
 
     long pollingInterval = 250;
-    long zeroTimeout = 10000;
     long busyDelay = 10;
 
     GetProperty(kPropSerialNumber, textValue);
@@ -221,11 +215,9 @@ int BPC301Stage::Initialize()
     zeroOnInitialize_ = (value == kYes);
 
     GetProperty(kPropPollingIntervalMs, pollingInterval);
-    GetProperty(kPropZeroTimeoutMs, zeroTimeout);
     GetProperty(kPropBusyDelayMs, busyDelay);
 
     pollingIntervalMs_ = static_cast<int>(pollingInterval);
-    zeroTimeoutMs_ = zeroTimeout;
     busyDelayMs_ = busyDelay;
 
     int ret = OpenController();
@@ -335,7 +327,7 @@ int BPC301Stage::Initialize()
         // PBC_GetStatusBits is not reading stale pre-command status.
         CDeviceUtils::SleepMs(pollingIntervalMs_);
 
-        ret = WaitForZeroComplete(zeroTimeoutMs_);
+        ret = WaitForZeroComplete(kZeroTimeoutMs);
         if (ret != DEVICE_OK)
         {
             Shutdown();

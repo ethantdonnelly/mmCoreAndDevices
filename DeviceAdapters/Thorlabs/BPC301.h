@@ -93,7 +93,6 @@ private:
 
     short channel_;
     int pollingIntervalMs_;
-    long zeroTimeoutMs_;
     long busyDelayMs_;
 
     bool invertDirection_;
