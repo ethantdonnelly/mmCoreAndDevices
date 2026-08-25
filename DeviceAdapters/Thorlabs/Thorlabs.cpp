@@ -31,6 +31,7 @@
 #include "IntegratedFilterWheel.h"
 #include "MCM301.h"
 #include "BPC301.h"
+#include "BBD302.h"
 
 #include <ModuleInterface.h>
 #include <MMDevice.h>
@@ -49,6 +50,7 @@ const char* g_MotorZStageDeviceName = "MotorZStage";
 const char* g_WheelDeviceName = "FilterWheel";
 const char* g_MCM301StageDeviceName = "MCM301Stage";
 const char* g_BPC301StageDeviceName = "BPC301Stage";
+const char* g_BBD302StageDeviceName = "BBD302Stage";
 
 const char* g_SerialNumberProp = "SerialNumber";
 const char* g_ModelNumberProp = "ModelNumber";
@@ -91,6 +93,7 @@ MODULE_API void InitializeModuleData()
    RegisterDevice(g_WheelDeviceName, MM::StateDevice, "Integrated filter wheel");
    RegisterDevice(g_MCM301StageDeviceName, MM::StageDevice, "Thorlabs MCM301 single-axis Z stage");
    RegisterDevice(g_BPC301StageDeviceName, MM::StageDevice, "Thorlabs BPC301 high-precision single-axis Z stage");
+   RegisterDevice(g_BBD302StageDeviceName, MM::XYStageDevice, "Thorlabs BBD302 XY stage");
 }
 
 MODULE_API MM::Device* CreateDevice(const char* deviceName)
@@ -126,6 +129,11 @@ MODULE_API MM::Device* CreateDevice(const char* deviceName)
    if (strcmp(deviceName, g_BPC301StageDeviceName) == 0)
    {
 	   BPC301Stage* stage = new BPC301Stage();
+	   return stage;
+   }
+   if (strcmp(deviceName, g_BBD302StageDeviceName) == 0)
+   {
+	   BBD302Stage* stage = new BBD302Stage();
 	   return stage;
    }
 
