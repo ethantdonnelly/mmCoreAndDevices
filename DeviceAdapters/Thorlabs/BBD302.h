@@ -69,7 +69,6 @@ public:
     int OnFlipY(MM::PropertyBase* pProp, MM::ActionType eAct);
 
 private:
-    int ResolveSerialNumber();
     int ConfigureAxis(short channel,
         long& minSteps, long& maxSteps,
         double& minUm, double& maxUm,

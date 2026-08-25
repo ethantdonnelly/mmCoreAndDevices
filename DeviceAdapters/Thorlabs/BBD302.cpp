@@ -40,6 +40,9 @@ namespace
     const int kPollingIntervalMs = 250;
     const unsigned long kInitializeHomeTimeoutMs = 60000;
 
+    // Replace with your devices serial number 
+    const char* const kBBD302SerialNumber = "103467624";
+
     const char* const kPropSerialNumber = "SerialNumber";
     const char* const kPropFlipX = "Flip X";
     const char* const kPropFlipY = "Flip Y";
@@ -106,7 +109,7 @@ BBD302Stage::BBD302Stage() :
     pollingY_(false),
     flipX_(false),
     flipY_(false),
-    serialNo_(),
+    serialNo_(kBBD302SerialNumber),
     xMinSteps_(0),
     xMaxSteps_(0),
     yMinSteps_(0),
@@ -151,7 +154,7 @@ BBD302Stage::BBD302Stage() :
 
     CPropertyAction* serialAction =
         new CPropertyAction(this, &BBD302Stage::OnSerialNumber);
-    CreateProperty(kPropSerialNumber, "", MM::String, false,
+    CreateProperty(kPropSerialNumber, kBBD302SerialNumber, MM::String, false,
         serialAction, true);
 
     CPropertyAction* flipXAction =
@@ -182,16 +185,15 @@ int BBD302Stage::Initialize()
     if (initialized_)
         return DEVICE_OK;
 
+    if (serialNo_.empty())
+        return ERR_BBD302_INVALID_SERIAL;
+
     const short listResult = TLI_BuildDeviceList();
     if (listResult != 0)
     {
         LogKinesisError("TLI_BuildDeviceList", listResult);
         return ERR_BBD302_DEVICE_NOT_FOUND;
     }
-
-    int ret = ResolveSerialNumber();
-    if (ret != DEVICE_OK)
-        return ret;
 
     const short openResult = BMC_Open(serialNo_.c_str());
     if (openResult != 0)
@@ -255,7 +257,7 @@ int BBD302Stage::Initialize()
 
     SleepMs(250);
 
-    ret = ConfigureAxis(kXChannel, xMinSteps_, xMaxSteps_,
+    int ret = ConfigureAxis(kXChannel, xMinSteps_, xMaxSteps_,
         xMinUm_, xMaxUm_, stepSizeXUm_);
     if (ret != DEVICE_OK)
     {
@@ -562,63 +564,6 @@ int BBD302Stage::OnFlipY(MM::PropertyBase* pProp, MM::ActionType eAct)
                 OnXYStagePositionChanged(x, y);
         }
     }
-    return DEVICE_OK;
-}
-
-int BBD302Stage::ResolveSerialNumber()
-{
-    if (!serialNo_.empty())
-    {
-        TLI_DeviceInfo info;
-        std::memset(&info, 0, sizeof(info));
-        const short result = TLI_GetDeviceInfo(serialNo_.c_str(), &info);
-        if (result != 0 || !info.isKnownType ||
-            info.motorType != MOT_BrushlessMotor || info.maxChannels < 2)
-            return ERR_BBD302_INVALID_SERIAL;
-
-        return DEVICE_OK;
-    }
-
-    // No serial configured: auto-select only when there is exactly one
-    // suitable two-channel brushless controller.  This avoids silently choosing
-    // the wrong Thorlabs controller on multi-device systems.
-    char deviceList[4096] = { 0 };
-    const short result = TLI_GetDeviceListExt(deviceList,
-        static_cast<DWORD>(sizeof(deviceList)));
-    if (result != 0)
-    {
-        LogKinesisError("TLI_GetDeviceListExt", result);
-        return ERR_BBD302_DEVICE_NOT_FOUND;
-    }
-
-    const std::vector<std::string> candidates = SplitDeviceList(deviceList);
-    std::vector<std::string> brushlessControllers;
-
-    for (std::vector<std::string>::const_iterator it = candidates.begin();
-        it != candidates.end(); ++it)
-    {
-        TLI_DeviceInfo info;
-        std::memset(&info, 0, sizeof(info));
-        if (TLI_GetDeviceInfo(it->c_str(), &info) == 0 &&
-            info.isKnownType && info.motorType == MOT_BrushlessMotor &&
-            info.maxChannels >= 2)
-        {
-            brushlessControllers.push_back(*it);
-        }
-    }
-
-    if (brushlessControllers.size() != 1)
-    {
-        std::ostringstream message;
-        message << "BBD302: found " << brushlessControllers.size()
-            << " suitable two-channel brushless controllers. "
-            << "Set the SerialNumber pre-initialization property explicitly.";
-        LogMessage(message.str(), false);
-        return brushlessControllers.empty() ?
-            ERR_BBD302_DEVICE_NOT_FOUND : ERR_BBD302_INVALID_SERIAL;
-    }
-
-    serialNo_ = brushlessControllers.front();
     return DEVICE_OK;
 }
 
