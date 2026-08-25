@@ -204,7 +204,7 @@ int BBD302Stage::Initialize()
     opened_ = true;
 
     const short channelCount = BMC_GetNumChannels(serialNo_.c_str());
-    if (channelCount < 2 ||
+    if (channelCount != 2 ||
         !BMC_IsChannelValid(serialNo_.c_str(), kXChannel) ||
         !BMC_IsChannelValid(serialNo_.c_str(), kYChannel))
     {
