@@ -39,8 +39,10 @@ namespace
     const short kYChannel = 2;
     const int kPollingIntervalMs = 250;
     const unsigned long kInitializeHomeTimeoutMs = 60000;
+    const unsigned long kMoveTimeoutMs = 10000;
+    const unsigned long kMoveWaitIntervalMs = 10;
 
-    // Replace with your devices serial number 
+    // Default serial number
     const char* const kBBD302SerialNumber = "103467624";
 
     const char* const kPropSerialNumber = "SerialNumber";
@@ -56,6 +58,10 @@ namespace
     const DWORD kStatusJoggingCCW = 0x00000080;
     const DWORD kStatusHoming = 0x00000200;
     const DWORD kStatusHomed = 0x00000400;
+
+    const WORD kMessageTypeGenericMotor = 2;
+    const WORD kMessageIdMoved = 1;
+    const WORD kMessageIdStopped = 2;
 
     std::string Trim(const std::string& value)
     {
@@ -145,6 +151,8 @@ BBD302Stage::BBD302Stage() :
         "The configured serial number is not a suitable two-channel brushless controller.");
     SetErrorText(ERR_BBD302_CONFIGURATION_FAILED,
         "Failed to obtain BBD302 stage configuration or unit conversion information.");
+    SetErrorText(ERR_BBD302_MOVE_TIMEOUT,
+        "Timed out waiting for the BBD302 move to complete.");
 
     CreateProperty(MM::g_Keyword_Name, g_BBD302StageDeviceName,
         MM::String, true);
@@ -356,6 +364,8 @@ bool BBD302Stage::Busy()
 
 int BBD302Stage::SetPositionSteps(long x, long y)
 {
+    std::lock_guard<std::mutex> moveLock(moveMutex_);
+
     if (!IsConnected())
         return DEVICE_NOT_CONNECTED;
 
@@ -378,21 +388,51 @@ int BBD302Stage::SetPositionSteps(long x, long y)
         physicalY >(std::numeric_limits<int>::max)())
         return DEVICE_INVALID_INPUT_PARAM;
 
-    short result = BMC_MoveToPosition(serialNo_.c_str(), kXChannel,
-        static_cast<int>(physicalX));
-    if (result != 0)
+    const int currentX =
+        BMC_GetPosition(serialNo_.c_str(), kXChannel);
+    const int currentY =
+        BMC_GetPosition(serialNo_.c_str(), kYChannel);
+
+    if (currentX != static_cast<int>(physicalX))
     {
-        LogKinesisError("BMC_MoveToPosition(X)", result);
-        return ERR_BBD302_MOVE_FAILED;
+        BMC_ClearMessageQueue(serialNo_.c_str(), kXChannel);
+
+        short result =
+            BMC_MoveToPosition(serialNo_.c_str(), kXChannel,
+                static_cast<int>(physicalX));
+
+        if (result != 0)
+        {
+            LogKinesisError("BMC_MoveToPosition(X)", result);
+            return ERR_BBD302_MOVE_FAILED;
+        }
+
+        const int waitResult =
+            WaitForMoveComplete(kXChannel, kMoveTimeoutMs);
+
+        if (waitResult != DEVICE_OK)
+            return waitResult;
     }
 
-    result = BMC_MoveToPosition(serialNo_.c_str(), kYChannel,
-        static_cast<int>(physicalY));
-    if (result != 0)
+    if (currentY != static_cast<int>(physicalY))
     {
-        LogKinesisError("BMC_MoveToPosition(Y)", result);
-        BMC_StopImmediate(serialNo_.c_str(), kXChannel);
-        return ERR_BBD302_MOVE_FAILED;
+        BMC_ClearMessageQueue(serialNo_.c_str(), kYChannel);
+
+        short result =
+            BMC_MoveToPosition(serialNo_.c_str(), kYChannel,
+                static_cast<int>(physicalY));
+
+        if (result != 0)
+        {
+            LogKinesisError("BMC_MoveToPosition(Y)", result);
+            return ERR_BBD302_MOVE_FAILED;
+        }
+
+        const int waitResult =
+            WaitForMoveComplete(kYChannel, kMoveTimeoutMs);
+
+        if (waitResult != DEVICE_OK)
+            return waitResult;
     }
 
     return DEVICE_OK;
@@ -417,6 +457,8 @@ int BBD302Stage::GetPositionSteps(long& x, long& y)
 
 int BBD302Stage::Home()
 {
+    std::lock_guard<std::mutex> moveLock(moveMutex_);
+
     if (!IsConnected())
         return DEVICE_NOT_CONNECTED;
 
@@ -425,7 +467,6 @@ int BBD302Stage::Home()
         return ERR_BBD302_HOME_FAILED;
 
     BMC_ClearMessageQueue(serialNo_.c_str(), kXChannel);
-    BMC_ClearMessageQueue(serialNo_.c_str(), kYChannel);
 
     short result = BMC_Home(serialNo_.c_str(), kXChannel);
     if (result != 0)
@@ -434,13 +475,22 @@ int BBD302Stage::Home()
         return ERR_BBD302_HOME_FAILED;
     }
 
+    int waitResult = WaitForAxisHome(kXChannel, kInitializeHomeTimeoutMs);
+    if (waitResult != DEVICE_OK)
+        return waitResult;
+
+    BMC_ClearMessageQueue(serialNo_.c_str(), kYChannel);
+
     result = BMC_Home(serialNo_.c_str(), kYChannel);
     if (result != 0)
     {
         LogKinesisError("BMC_Home(Y)", result);
-        BMC_StopImmediate(serialNo_.c_str(), kXChannel);
         return ERR_BBD302_HOME_FAILED;
     }
+
+    waitResult = WaitForAxisHome(kYChannel, kInitializeHomeTimeoutMs);
+    if (waitResult != DEVICE_OK)
+        return waitResult;
 
     return DEVICE_OK;
 }
@@ -644,6 +694,46 @@ int BBD302Stage::ConfigureAxis(short channel,
     return DEVICE_OK;
 }
 
+int BBD302Stage::WaitForMoveComplete(short channel,
+    unsigned long timeoutMs)
+{
+    unsigned long elapsedMs = 0;
+
+    while (elapsedMs < timeoutMs)
+    {
+        if (!IsConnected())
+            return DEVICE_NOT_CONNECTED;
+
+        while (BMC_MessageQueueSize(serialNo_.c_str(), channel) > 0)
+        {
+            WORD messageType = 0;
+            WORD messageId = 0;
+            DWORD messageData = 0;
+
+            if (!BMC_GetNextMessage(serialNo_.c_str(), channel,
+                &messageType, &messageId,
+                &messageData))
+            {
+                break;
+            }
+
+            if (messageType == kMessageTypeGenericMotor)
+            {
+                if (messageId == kMessageIdMoved)
+                    return DEVICE_OK;
+
+                if (messageId == kMessageIdStopped)
+                    return ERR_BBD302_MOVE_FAILED;
+            }
+        }
+
+        SleepMs(kMoveWaitIntervalMs);
+        elapsedMs += kMoveWaitIntervalMs;
+    }
+
+    return ERR_BBD302_MOVE_TIMEOUT;
+}
+
 int BBD302Stage::WaitForHome(unsigned long timeoutMs)
 {
     const unsigned long sleepIntervalMs = 100;
@@ -667,6 +757,28 @@ int BBD302Stage::WaitForHome(unsigned long timeoutMs)
     }
 
     Stop();
+    return ERR_BBD302_HOME_FAILED;
+}
+
+int BBD302Stage::WaitForAxisHome(short channel,
+    unsigned long timeoutMs)
+{
+    const unsigned long sleepIntervalMs = 100;
+    unsigned long elapsedMs = 0;
+
+    while (elapsedMs < timeoutMs)
+    {
+        if (!IsConnected())
+            return DEVICE_NOT_CONNECTED;
+
+        if (AxisIsHomed(channel))
+            return DEVICE_OK;
+
+        SleepMs(sleepIntervalMs);
+        elapsedMs += sleepIntervalMs;
+    }
+
+    BMC_StopImmediate(serialNo_.c_str(), channel);
     return ERR_BBD302_HOME_FAILED;
 }
 

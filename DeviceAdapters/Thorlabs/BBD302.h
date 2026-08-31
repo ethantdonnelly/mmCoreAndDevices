@@ -19,6 +19,7 @@
 #include <DeviceBase.h>
 
 #include <string>
+#include <mutex>
 
 extern const char* g_BBD302StageDeviceName;
 
@@ -34,6 +35,7 @@ extern const char* g_BBD302StageDeviceName;
 #define ERR_BBD302_NOT_HOMED             10009
 #define ERR_BBD302_INVALID_SERIAL        10010
 #define ERR_BBD302_CONFIGURATION_FAILED   10011
+#define ERR_BBD302_MOVE_TIMEOUT 10012
 
 class BBD302Stage : public CXYStageBase<BBD302Stage>
 {
@@ -74,6 +76,8 @@ private:
         double& minUm, double& maxUm,
         double& stepSizeUm);
     int WaitForHome(unsigned long timeoutMs);
+    int WaitForAxisHome(short channel, unsigned long timeoutMs);
+    int WaitForMoveComplete(short channel, unsigned long timeoutMs);
     bool AxisIsHomed(short channel) const;
     bool AxisIsBusy(short channel) const;
     bool IsConnected() const;
@@ -105,6 +109,8 @@ private:
     double yMaxUm_;
     double stepSizeXUm_;
     double stepSizeYUm_;
+
+    std::mutex moveMutex_;
 };
 
 #endif //_BBD302_H_
