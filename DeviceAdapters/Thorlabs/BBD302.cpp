@@ -41,6 +41,7 @@ namespace
     const unsigned long kInitializeHomeTimeoutMs = 60000;
     const unsigned long kMoveTimeoutMs = 10000;
     const unsigned long kMoveWaitIntervalMs = 10;
+    const double kCommandToleranceUm = 25.0;
 
     // Default serial number
     const char* const kBBD302SerialNumber = "103467624";
@@ -393,11 +394,34 @@ int BBD302Stage::SetPositionSteps(long x, long y)
     const int currentY =
         BMC_GetPosition(serialNo_.c_str(), kYChannel);
 
-    if (currentX != static_cast<int>(physicalX))
-    {
+    // Ignore very small residual positioning errors so an unchanged
+    // axis is not unnecessarily given another tiny correction move.
+    const double xErrorUm =
+        std::abs(
+            (static_cast<double>(currentX) -
+                static_cast<double>(physicalX)) *
+            stepSizeXUm_);
+
+    const double yErrorUm =
+        std::abs(
+            (static_cast<double>(currentY) -
+                static_cast<double>(physicalY)) *
+            stepSizeYUm_);
+
+    const bool moveX = xErrorUm > kCommandToleranceUm;
+    const bool moveY = yErrorUm > kCommandToleranceUm;
+
+    // Clear the relevant completion-message queues before commanding motion.
+    if (moveX)
         BMC_ClearMessageQueue(serialNo_.c_str(), kXChannel);
 
-        short result =
+    if (moveY)
+        BMC_ClearMessageQueue(serialNo_.c_str(), kYChannel);
+
+    // Start X.
+    if (moveX)
+    {
+        const short result =
             BMC_MoveToPosition(serialNo_.c_str(), kXChannel,
                 static_cast<int>(physicalX));
 
@@ -406,28 +430,45 @@ int BBD302Stage::SetPositionSteps(long x, long y)
             LogKinesisError("BMC_MoveToPosition(X)", result);
             return ERR_BBD302_MOVE_FAILED;
         }
-
-        const int waitResult =
-            WaitForMoveComplete(kXChannel, kMoveTimeoutMs);
-
-        if (waitResult != DEVICE_OK)
-            return waitResult;
     }
 
-    if (currentY != static_cast<int>(physicalY))
+    // Start Y immediately. If X was also commanded, both axes
+    // are now moving simultaneously.
+    if (moveY)
     {
-        BMC_ClearMessageQueue(serialNo_.c_str(), kYChannel);
-
-        short result =
+        const short result =
             BMC_MoveToPosition(serialNo_.c_str(), kYChannel,
                 static_cast<int>(physicalY));
 
         if (result != 0)
         {
             LogKinesisError("BMC_MoveToPosition(Y)", result);
+
+            if (moveX)
+                BMC_StopImmediate(serialNo_.c_str(), kXChannel);
+
             return ERR_BBD302_MOVE_FAILED;
         }
+    }
 
+    // Both commands have already been issued, so these waits do not
+    // make the physical X/Y movement sequential.
+    if (moveX)
+    {
+        const int waitResult =
+            WaitForMoveComplete(kXChannel, kMoveTimeoutMs);
+
+        if (waitResult != DEVICE_OK)
+        {
+            if (moveY)
+                BMC_StopImmediate(serialNo_.c_str(), kYChannel);
+
+            return waitResult;
+        }
+    }
+
+    if (moveY)
+    {
         const int waitResult =
             WaitForMoveComplete(kYChannel, kMoveTimeoutMs);
 
