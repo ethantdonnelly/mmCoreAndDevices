@@ -4,12 +4,8 @@
 // SUBSYSTEM:     DeviceAdapters
 //-----------------------------------------------------------------------------
 // DESCRIPTION:   The drivers for the Picard Industries USB filter wheel
-//                Based on the CDemoStage and CDemoXYStage classes
 //
-// AUTHORS:       Johannes Schindelin, Luke Stuyvenberg, 2011 - 2014
-//
-// COPYRIGHT:     Board of Regents of the University of Wisconsin -- Madison,
-//					Copyright (C) 2011 - 2014
+// AUTHORS:       Ethan Donnelly, 2026
 //
 // LICENSE:       This file is distributed under the BSD license.
 //                License text is included with the source distribution.
@@ -21,6 +17,25 @@
 //                IN NO EVENT SHALL THE COPYRIGHT OWNER OR
 //                CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 //                INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES.
+///////////////////////////////////////////////////////////////////////////////
+// DEPENDENCIES
+//
+// Download Picard Filter Wheel software from Picard Industries:
+// https://picardindustries.com/other/software-downloads/
+//   - Unzip the file into the 3rdpartypublic directory of your Micro-Manager source tree.
+//
+// Expected file locations:
+//   Include:  3rdpartypublic\Picard\USB Filter V1.4\PiUsbSDK\include
+//   Lib:      3rdpartypublic\Picard\USB Filter V1.4\PiUsbSDK\lib\x64
+//   Bin:      3rdpartypublic\Picard\USB Filter V1.4\PiUsbSDK\bin\x64
+//
+// Required Picard files:
+//   - PiUsb.h
+//   - PiUsb.lib
+//
+// Runtime DLLs:
+//   - PiUsb.dll
+///////////////////////////////////////////////////////////////////////////////
 
 #ifndef _PICARDFILTERWHEEL_H_
 #define _PICARDFILTERWHEEL_H_
