@@ -11,6 +11,27 @@
 //
 // This adapter uses the Thorlabs Kinesis Benchtop Brushless Motor C API.
 ///////////////////////////////////////////////////////////////////////////////
+// DEPENDENCIES
+//
+// Download Kinesis Software from Thorlabs: 
+// https://www.thorlabs.com/software-pages/motion_control
+// 
+// C++ SDK Located in: 
+//   C:\Program Files\Thorlabs\Kinesis
+//
+// Expected file locations:
+//   Include:  3rdpartypublic\Thorlabs\BBD302\include
+//   Lib:      3rdpartypublic\Thorlabs\BBD302\lib
+//   Bin:      3rdpartypublic\Thorlabs\BBD302\bin
+//
+// Required Kinesis files:
+//   - Thorlabs.MotionControl.Benchtop.BrushlessMotor.h
+//   - Thorlabs.MotionControl.Benchtop.BrushlessMotor.lib
+//
+// Runtime DLLs:
+//   - Thorlabs.MotionControl.DeviceManager.dll
+//   - Thorlabs.MotionControl.Benchtop.BrushlessMotor.dll
+///////////////////////////////////////////////////////////////////////////////
 
 #ifndef _BBD302_H_
 #define _BBD302_H_

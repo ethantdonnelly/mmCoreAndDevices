@@ -11,6 +11,27 @@
 //
 // This adapter uses the Thorlabs Kinesis Benchtop Piezo C API.
 ///////////////////////////////////////////////////////////////////////////////
+// DEPENDENCIES
+//
+// Download Kinesis Software from Thorlabs: 
+// https://www.thorlabs.com/software-pages/motion_control
+// 
+// C++ SDK Located in: 
+//   C:\Program Files\Thorlabs\Kinesis
+//
+// Expected file locations:
+//   Include:  3rdpartypublic\Thorlabs\BPC301\include
+//   Lib:      3rdpartypublic\Thorlabs\BPC301\lib
+//   Bin:      3rdpartypublic\Thorlabs\BPC301\bin
+//
+// Required Kinesis files:
+//   - Thorlabs.MotionControl.Benchtop.Piezo.h
+//   - Thorlabs.MotionControl.Benchtop.Piezo.lib
+//
+// Runtime DLLs:
+//   - Thorlabs.MotionControl.DeviceManager.dll
+//   - Thorlabs.MotionControl.Benchtop.Piezo.dll
+///////////////////////////////////////////////////////////////////////////////
 
 #ifndef _BPC301_H_
 #define _BPC301_H_

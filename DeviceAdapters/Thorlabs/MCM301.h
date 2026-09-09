@@ -11,6 +11,27 @@
 //
 // This adapter uses the Thorlabs MCM301 Command Library.
 ///////////////////////////////////////////////////////////////////////////////
+// DEPENDENCIES
+// 
+// Download MCM301 Software from Thorlabs: 
+// https://www.thorlabs.com/software-pages/mcm301
+// 
+// C++ SDK Located in: 
+//   C:\Program Files (x86)\Thorlabs\MCM301\Sample\Thorlabs_MCM301_C++ SDK
+//
+// Expected file locations:
+//   Include:  3rdpartypublic\Thorlabs\MCM301\include
+//   Lib:      3rdpartypublic\Thorlabs\MCM301\lib
+//   Bin:      3rdpartypublic\Thorlabs\MCM301\bin
+//
+// Required MCM301 files:
+//   - MCM301CommandLibrary.h
+//   - MCM301TypeDef.h
+//   - MCM301Lib_x64.dll
+//
+// Runtime DLLs:
+//   - MCM301Lib_x64.dll
+///////////////////////////////////////////////////////////////////////////////
 
 #ifndef _MCM301_H_
 #define _MCM301_H_
