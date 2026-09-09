@@ -891,3 +891,15 @@ void BBD302Stage::LogKinesisError(const char* operation, short code) const
         << code << ".";
     LogMessage(message.str(), false);
 }
+
+int BBD302Stage::GetPropertyReadOnly(const char* name, bool& readOnly) const
+{
+    if (std::strcmp(name, MM::g_Keyword_Transpose_MirrorX) == 0 ||
+        std::strcmp(name, MM::g_Keyword_Transpose_MirrorY) == 0)
+    {
+        readOnly = true;
+        return DEVICE_OK;
+    }
+
+    return CXYStageBase<BBD302Stage>::GetPropertyReadOnly(name, readOnly);
+}

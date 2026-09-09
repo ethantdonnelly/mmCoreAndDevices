@@ -89,6 +89,8 @@ private:
 
     void LogKinesisError(const char* operation, short code) const;
 
+    int GetPropertyReadOnly(const char* name, bool& readOnly) const override;
+
     bool initialized_;
     bool opened_;
     bool pollingX_;
